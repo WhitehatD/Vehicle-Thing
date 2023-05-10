@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ParkingGarage {
+public class ParkingGarage{
 
-    private final HashMap<ParkingSpot, Vehicle> parkingSpots;
+    private final TreeMap<ParkingSpot, Vehicle> parkingSpots;
     private List<Vehicle> leftOutVehicles;
 
     public ParkingGarage(){
-        parkingSpots = new HashMap<>();
+        parkingSpots = new TreeMap<>();
         leftOutVehicles = new ArrayList<>();
     }
 
@@ -51,6 +51,14 @@ public class ParkingGarage {
         } else {
             leftOutVehicles.add(vehicle);
         }
+    }
+
+    public TreeMap<ParkingSpot, Vehicle> getParkingSpots() {
+        return parkingSpots;
+    }
+
+    public List<Vehicle> getLeftOutVehicles() {
+        return leftOutVehicles;
     }
 
     public void output(){

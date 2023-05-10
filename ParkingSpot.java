@@ -1,4 +1,4 @@
-public class ParkingSpot {
+public class ParkingSpot implements Comparable<ParkingSpot> {
 
     private int id;
     private double price;
@@ -35,4 +35,8 @@ public class ParkingSpot {
     }
 
 
+    @Override
+    public int compareTo(ParkingSpot o) {
+        return (id - o.getId());
+    }
 }

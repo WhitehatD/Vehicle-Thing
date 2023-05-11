@@ -1,5 +1,8 @@
 public enum VehicleTypes {
 
     CAR,
-    TRUCK
+    TRUCK,
+    BIKE,
+    SCOOTER,
+    MINIVAN
 }

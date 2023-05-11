@@ -32,7 +32,7 @@ public class ParkingGarage{
 
         ParkingSpotType type = ParkingSpotType.LARGE;
 
-        if(vehicle.getType() == VehicleTypes.CAR && parkingSpots
+        if(vehicle.getType() != VehicleTypes.TRUCK && parkingSpots
                 .keySet()
                 .stream()
                 .anyMatch(spot -> spot.getType() == ParkingSpotType.SMALL && !isOccupied(spot))){

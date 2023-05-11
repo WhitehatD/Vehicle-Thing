@@ -345,6 +345,8 @@ public class Main {
         ParkingGarage garage = new ParkingGarage();
         garage.addSpots(spots.toArray(new ParkingSpot[0]));
 
+
+
         for(Vehicle vehicle : vehicles){
             garage.reserveParkingSpot(vehicle);
         }
@@ -398,6 +400,8 @@ public class Main {
         notOccupiedLabel.setText("<html> Autovehicule fara loc: <br>" + result + "</html>");
 
         simulationPanel.add(notOccupied, BorderLayout.CENTER);
+
+        garage.output();
 
     }
 

@@ -1,11 +1,12 @@
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSpinnerUI;
 import javax.swing.text.DefaultFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -13,8 +14,8 @@ import java.util.List;
 
 public class Main {
 
-    private static JFrame frame;
-    private static JPanel mainPanel, carPanel, parkingPanel, simulationPanel;
+    public static JFrame frame;
+    private static JPanel mainPanel, carPanel, parkingPanel, simulationPanel, loginPanel;
 
     private static List<ParkingSpot> spots;
     private static List<Vehicle> vehicles;
@@ -40,6 +41,7 @@ public class Main {
 
         garage.output();
 
+        initLoginPanel();
         initMainPanel();
         initCarPanel();
         initParkingPanel();
@@ -85,7 +87,6 @@ public class Main {
         topPanel.add(carsButton);
 
 
-
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.LIGHT_GRAY);
 
@@ -115,7 +116,7 @@ public class Main {
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
 
-        frame.setContentPane(mainPanel);
+        frame.setContentPane(loginPanel);
         frame.setVisible(true);
     }
 
@@ -404,6 +405,173 @@ public class Main {
         garage.output();
 
     }
+
+    private static void initLoginPanel() {
+        loginPanel = new JPanel();
+        GroupLayout layout = new GroupLayout(loginPanel);
+        loginPanel.setLayout(layout);
+
+        loginPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        loginPanel.setBackground(Color.LIGHT_GRAY);
+
+        // Username Label
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(Color.LIGHT_GRAY);
+
+        JLabel usernameLabel = new JLabel("Utilizator:");
+        usernameLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        topPanel.add(usernameLabel, BorderLayout.NORTH);
+
+        // Username Text Field
+        JTextField usernameField = new JTextField();
+        usernameField.setFont(new Font("Arial", Font.PLAIN, 20));
+        topPanel.add(usernameField, BorderLayout.CENTER);
+
+        JPanel midPanel = new JPanel(new BorderLayout());
+        midPanel.setBackground(Color.LIGHT_GRAY);
+
+        // Password Label
+        JLabel passwordLabel = new JLabel("Parola:");
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        midPanel.add(passwordLabel, BorderLayout.NORTH);
+
+        // Password Field
+        JPasswordField passwordField = new JPasswordField();
+        passwordField.setFont(new Font("Arial", Font.PLAIN, 20));
+        midPanel.add(passwordField, BorderLayout.PAGE_END);
+
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(Color.LIGHT_GRAY);
+
+        // Login Button
+        JButton loginButton = new JButton("Login");
+        loginButton.setFont(new Font("Arial", Font.PLAIN, 20));
+        loginButton.setBackground(Color.GREEN);
+        loginButton.setPreferredSize(new Dimension(150, 70));
+        loginButton.setFocusPainted(false);
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+
+            if (validateLogin(username, password)) {
+                switchFrame(loginPanel, mainPanel);
+            } else {
+                JOptionPane.showMessageDialog(mainPanel, "Username sau parola incorecte.");
+            }
+        });
+
+        bottomPanel.add(loginButton);
+
+        // Register Button
+        JButton registerButton = new JButton("Register");
+        registerButton.setFont(new Font("Arial", Font.PLAIN, 20));
+        registerButton.setBackground(Color.CYAN);
+        registerButton.setPreferredSize(new Dimension(150, 70));
+        registerButton.setFocusPainted(false);
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if (registerUser(username, password)) {
+                    JOptionPane.showMessageDialog(mainPanel, "Te-ai inregistrat cu succes!");
+                }
+            }
+        });
+
+        bottomPanel.add(registerButton);
+
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(usernameLabel)
+                        .addGap(10)
+                        .addComponent(usernameField))
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(passwordLabel)
+                        .addGap(10)
+                        .addComponent(passwordField))
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(loginButton)
+                        .addGap(10)
+                        .addComponent(registerButton))
+        );
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(usernameLabel)
+                        .addComponent(usernameField))
+                .addGap(10)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(passwordLabel)
+                        .addComponent(passwordField))
+                .addGap(10)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(loginButton)
+                        .addComponent(registerButton))
+        );
+
+    }
+
+    private static boolean validateLogin(String username, String password) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] user = line.split(",");
+                String storedUsername = user[0];
+                String storedPassword = user[1];
+                if (username.equals(storedUsername) && password.equals(storedPassword)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static boolean registerUser(String username, String password) {
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(loginPanel, "Userul sau parola nu sunt completate.");
+            return false;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] user = line.split(",");
+                String storedUsername = user[0];
+                if (username.equals(storedUsername)) {
+                    JOptionPane.showMessageDialog(loginPanel, "Deja exista un utilizator cu acest nume.");
+                    return false;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true))) {
+            writer.write(username + "," + password);
+            writer.newLine();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+
+
+
+
+
 
     private static void switchFrame(JPanel from, JPanel to){
         from.setVisible(false);
